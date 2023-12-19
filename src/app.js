@@ -12,26 +12,17 @@ const state = {
   }
 };
 
-const render = (state, data, form, input, feedback) => {
-  const schema = yup.object().shape({
-    url: yup.string()
-    .url(state.errors.url)
-    .notOneOf(state.urls, state.errors.notOneOf)
-  });
-
-  schema.validate(data)
-  .then((data) => {
-    state.urls.push(data.url);
+const renderUrl = (state, data, form, input, feedback) => {
+   state.urls.push(data.url);
     form.reset();
     input.focus();
     feedback.textContent = '';
     input.classList.remove('is-invalid');
-  })
-  .catch((ValidationError) => {
-  console.log(ValidationError.value)
+  }
+
+const renderError = (ValidationError, input, feedback) => {
   feedback.textContent = ValidationError.errors;
   input.classList.add('is-invalid');
-});
 }
 
 export default () => {
@@ -45,6 +36,14 @@ export default () => {
     const data = {
       url: formData.get('url')
     };
-    render(state, data, form, input, feedback);
-  })
-}
+    const schema = yup.object().shape({
+      url: yup.string()
+      .url(state.errors.url)
+      .notOneOf(state.urls, state.errors.notOneOf)
+    });
+  
+    schema.validate(data)
+    .then(renderUrl(state, data, form, input, feedback))
+    .catch((ValidationError) => renderError(ValidationError, input, feedback))
+  });
+  }
