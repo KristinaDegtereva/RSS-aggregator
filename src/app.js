@@ -31,7 +31,13 @@ export default () => {
     });
 
     schema.validate(data)
-    .then((data) => state.urls.push(data.url))
+    .then((data) => {
+      state.urls.push(data.url);
+      form.reset();
+      input.focus();
+      feedback.textContent = '';
+      input.classList.remove('is-invalid');
+    })
     .catch((ValidationError) => {
     console.log(ValidationError.value)
     feedback.textContent = ValidationError.errors;
