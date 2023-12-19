@@ -16,7 +16,9 @@ const renderUrl = (state, data, form, input, feedback) => {
    state.urls.push(data.url);
     form.reset();
     input.focus();
-    feedback.textContent = '';
+    feedback.textContent = 'RSS успешно загружен';
+    feedback.classList.remove('text-danger');
+    feedback.classList.add('text-success');
     input.classList.remove('is-invalid');
   }
 
@@ -33,6 +35,7 @@ export default () => {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+  
     const data = {
       url: formData.get('url')
     };
