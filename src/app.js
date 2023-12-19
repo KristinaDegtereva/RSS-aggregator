@@ -10,6 +10,10 @@ export default () => {
 
   const state = {
     urls: [],
+    errors: {
+      url: 'Ссылка должна быть валидным URL',
+      notOneOf: 'RSS уже существует',
+    }
   };
 
   const form = document.querySelector('.rss-form');
@@ -26,8 +30,8 @@ export default () => {
 
     const schema = yup.object().shape({
       url: yup.string()
-      .url('Ссылка должна быть валидным URL')
-      .notOneOf(state.urls, 'RSS уже существует')
+      .url(state.errors.url)
+      .notOneOf(state.urls, state.errors.notOneOf)
     });
 
     schema.validate(data)
