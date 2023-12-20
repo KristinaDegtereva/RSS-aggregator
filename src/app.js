@@ -18,7 +18,7 @@ import initView from './view.js';
         },
       };
 
-      const schema = (allUrls) => yup.object().shape({
+      const schema = yup.object().shape({
         url: yup.string()
         .url('Ссылка должна быть валидным URL')
         .notOneOf(state.form.allUrls, 'RSS уже существует')
@@ -26,9 +26,7 @@ import initView from './view.js';
       
       const validate = (fields) => {
         try {
-          if (fields.url !== null && fields.url !== undefined) {
             schema.validateSync(fields, { abortEarly: false });
-          }
           return {};
         } catch (e) {
           return _.keyBy(e.inner, 'path');
@@ -55,6 +53,7 @@ import initView from './view.js';
 
     if (_.isEmpty(error)) {
       watchState.form.allUrls.push(watchState.form.field.url);
+      // console.log(state.form.allUrls)
       watchState.form.field.url = '';
       watchState.form.processState = 'sending';
     }
