@@ -1,10 +1,7 @@
 const renderErrorsHandler = (alert, elements) => {
-    // console.log(alert.error);
     const errorMessage = alert.error !== undefined
       ? alert.error.message
       : alert.error;
-      // console.log('alert:', alert);
-      // console.log('errorMessage:', errorMessage);
     if (errorMessage) {
       elements.input.classList.add('is-invalid');
       elements.feedback.classList.add('text-danger');
@@ -26,23 +23,13 @@ const handleProcessState = (elements, process) => {
         elements.form.reset();
         elements.form.focus();
         break;
-  
-    //   case 'error':
-    //     elements.submit.disabled = false;
-    //     break;
 
-    //   case 'success':
-    //     elements.form.reset();
-    //     elements.form.focus();
-    //     break;
-  
       default:
         throw new Error(`Unknown process ${process}`);
     }
   };
 
-const initView = (elements, schema) => (path, value) => {
-  // console.log('initView called with path:', path, 'and value:', value);
+const initView = (elements) => (path, value) => {
     switch (path) {
       case 'form.processState':
         handleProcessState(elements, value);
