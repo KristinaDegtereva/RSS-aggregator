@@ -1,12 +1,16 @@
 const renderErrorsHandler = (alert, elements) => {
-    const errorMessage = alert.error.url !== undefined
-      ? alert.error.url.message
-      : alert.error.url;
+    // console.log(alert.error);
+    const errorMessage = alert.error !== undefined
+      ? alert.error.message
+      : alert.error;
+      // console.log('alert:', alert);
+      // console.log('errorMessage:', errorMessage);
     if (errorMessage) {
       elements.input.classList.add('is-invalid');
       elements.feedback.classList.add('text-danger');
       elements.feedback.textContent = errorMessage;
     } else {
+      console.log('Success case')
       elements.input.classList.remove('is-invalid');
       elements.feedback.textContent = 'RSS успешно загружен';
       elements.feedback.classList.remove('text-danger');
@@ -37,7 +41,8 @@ const handleProcessState = (elements, process) => {
     }
   };
 
-const initView = (elements) => (path, value) => {
+const initView = (elements, schema) => (path, value) => {
+  // console.log('initView called with path:', path, 'and value:', value);
     switch (path) {
       case 'form.processState':
         handleProcessState(elements, value);
