@@ -4,6 +4,8 @@ import * as yup from 'yup';
 import _ from 'lodash';
 import onChange from 'on-change';
 import initView from './view.js';
+import i18next from 'i18next';
+import resources from './locales/ru.js';
 
   export default () => {
     const state = {
@@ -13,10 +15,26 @@ import initView from './view.js';
           },
           allUrls: [],
           processState: '',
-          errors: {},
+          errors: [],
         },
       };
 
+    yup.setLocale({
+      mixed: {
+        notOneOf: () => ({ key: 'dublicateError' }),
+      },
+      string: {
+        url: () => ({ key: 'urlError' }),
+      },
+      });
+  
+      const i18n = i18next.createInstance();
+      i18n.init({
+          lng: 'ru',
+          debug: false,
+          resources,
+      });      
+      
     const elements = {
         form: document.querySelector('.rss-form'),
         input: document.querySelector('#url-input'),
@@ -24,7 +42,7 @@ import initView from './view.js';
         submit: document.querySelector('button[type="submit"]')
       };
 
-   const watchState = onChange(state, initView(elements));
+   const watchState = onChange(state, initView(elements, i18n));
 
   elements.form.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -33,8 +51,8 @@ import initView from './view.js';
     watchState.form.field.url = value.trim();
 
     const schema = yup.string()
-    .url('Ссылка должна быть валидным URL')
-    .notOneOf(state.form.allUrls, 'RSS уже существует');
+    .url()
+    .notOneOf(state.form.allUrls);
   
     schema.validate(value)
         .then(() => {
