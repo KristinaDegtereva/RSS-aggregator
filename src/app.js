@@ -15,7 +15,7 @@ export default () => {
       },
       allUrls: [],
       processState: '',
-      errors: {},
+      error: {},
     },
   };
 
@@ -25,47 +25,47 @@ export default () => {
     debug: false,
     resources,
   })
-  .then(() => {
-    yup.setLocale({
-      mixed: {
-        notOneOf: () => ({ key: 'dublicateError' }),
-      },
-      string: {
-        url: () => ({ key: 'urlError' }),
-      },
-    });
-    
-    const elements = {
-      form: document.querySelector('.rss-form'),
-      input: document.querySelector('#url-input'),
-      feedback: document.querySelector('.feedback'),
-      submit: document.querySelector('button[type="submit"]')
-    };
-  
-    const watchState = onChange(state, initView(elements, i18n));
-  
-    elements.form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const value = formData.get('url');
-      watchState.form.field.url = value.trim();
-  
-      const schema = yup.string()
-        .url()
-        .notOneOf(state.form.allUrls);
-  
-      schema.validate(value)
-        .then(() => {
-          watchState.form.allUrls.push(watchState.form.field.url);
-          watchState.form.field.url = '';
-          watchState.form.processState = 'sending';
-          watchState.form.errors = {};
-        })
-        .catch((error) => {
-          watchState.form.errors = { error };
-          return _.keyBy(error.inner, 'path');
-        })
-    })
+    .then(() => {
+      yup.setLocale({
+        mixed: {
+          notOneOf: () => ({ key: 'dublicateError' }),
+        },
+        string: {
+          url: () => ({ key: 'urlError' }),
+        },
+      });
 
-  });
+      const elements = {
+        form: document.querySelector('.rss-form'),
+        input: document.querySelector('#url-input'),
+        feedback: document.querySelector('.feedback'),
+        submit: document.querySelector('button[type="submit"]')
+      };
+
+      const watchState = onChange(state, initView(elements, i18n));
+
+      elements.form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const value = formData.get('url');
+        watchState.form.field.url = value.trim();
+
+        const schema = yup.string()
+          .url()
+          .notOneOf(state.form.allUrls);
+
+        schema.validate(value)
+          .then(() => {
+            watchState.form.allUrls.push(watchState.form.field.url);
+            watchState.form.field.url = '';
+            watchState.form.processState = 'sending';
+            watchState.form.error = {};
+          })
+          .catch((e) => {
+            watchState.form.error = e.message;
+            return _.keyBy(e.inner, 'path');
+          })
+      })
+
+    });
 }
