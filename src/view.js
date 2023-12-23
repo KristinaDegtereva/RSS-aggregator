@@ -5,6 +5,7 @@ const renderErrorsHandler = (alert, elements, i18n) => {
   if (errorMessage) {
     elements.input.classList.add('is-invalid');
     elements.feedback.classList.add('text-danger');
+    console.log(i18n.t('urlError', { lng: 'ru' }));
     elements.feedback.textContent = i18n.t(errorMessage);
   } else {
     elements.input.classList.remove('is-invalid');
@@ -17,30 +18,30 @@ const renderErrorsHandler = (alert, elements, i18n) => {
 };
 
 const handleProcessState = (elements, process) => {
-    switch (process) {  
-      case 'sending':
-        elements.form.reset();
-        elements.form.focus();
-        break;
+  switch (process) {
+    case 'sending':
+      elements.form.reset();
+      elements.form.focus();
+      break;
 
-      default:
-        throw new Error(`Unknown process ${process}`);
-    }
-  };
+    default:
+      throw new Error(`Unknown process ${process}`);
+  }
+};
 
 const initView = (elements, i18n) => (path, value) => {
-    switch (path) {
-      case 'form.processState':
-        handleProcessState(elements, value);
-        break;
-  
-      case 'form.errors':
-        renderErrorsHandler(value, elements, i18n);
-        break;
-  
-      default:
-        break;
-    }
+  switch (path) {
+    case 'form.processState':
+      handleProcessState(elements, value);
+      break;
+
+    case 'form.errors':
+      renderErrorsHandler(value, elements, i18n);
+      break;
+
+    default:
+      break;
+  }
 }
 
 export default initView;
