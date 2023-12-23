@@ -5,7 +5,7 @@ import _ from 'lodash';
 import onChange from 'on-change';
 import initView from './view.js';
 import i18next from 'i18next';
-import resources from './locales/ru.js';
+import resources from './locales/index.js';
 
 export default () => {
   const state = {
@@ -44,9 +44,9 @@ export default () => {
 
       const watchState = onChange(state, initView(elements, i18n));
 
-      elements.form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const formData = new FormData(e.target);
+      elements.form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.target);
         const value = formData.get('url');
         watchState.form.field.url = value.trim();
 
@@ -66,6 +66,5 @@ export default () => {
             return _.keyBy(e.inner, 'path');
           })
       })
-
     });
 }

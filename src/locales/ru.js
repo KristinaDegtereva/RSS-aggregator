@@ -7,5 +7,5 @@ export default {
         successUrl: 'RSS успешно загружен',
         urlError: 'Ссылка должна быть валидным URL',
         dublicateError: 'RSS уже существует',
-    }
+    },
 }
