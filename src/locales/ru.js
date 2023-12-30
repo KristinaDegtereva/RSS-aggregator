@@ -6,6 +6,7 @@ export default {
         exampleUrl: 'Пример',
         successUrl: 'RSS успешно загружен',
         urlError: 'Ссылка должна быть валидным URL',
+        rssError: 'Ресурс не содержит валидный RSS',
         dublicateError: 'RSS уже существует',
     },
 }

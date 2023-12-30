@@ -16,12 +16,20 @@ const renderErrorsHandler = (alert, elements, i18n) => {
   }
 };
 
+const successRender = (elements, state) => {
+  
+} 
+
 const handleProcessState = (elements, process) => {
   switch (process) {
     case 'sending':
       elements.form.reset();
       elements.form.focus();
       break;
+
+    case 'success':
+
+
 
     default:
       throw new Error(`Unknown process ${process}`);
