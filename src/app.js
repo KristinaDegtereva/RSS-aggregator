@@ -26,58 +26,91 @@ export default () => {
     lng: 'ru',
     debug: false,
     resources,
-  })
-    .then(() => {
-      yup.setLocale({
-        mixed: {
-          notOneOf: () => ({ key: 'dublicateError' }),
-        },
-        string: {
-          url: () => ({ key: 'urlError' }),
-        },
-      });
+  });
 
-      const elements = {
-        form: document.querySelector('.rss-form'),
-        input: document.querySelector('#url-input'),
-        feedback: document.querySelector('.feedback'),
-        submit: document.querySelector('button[type="submit"]'),
-        feeds: document.querySelector('.feeds'),
-        posts: document.querySelector('.posts')
-      };
+  yup.setLocale({
+    mixed: {
+      notOneOf: () => ({ key: 'dublicateError' }),
+    },
+    string: {
+      url: () => ({ key: 'urlError' }),
+    },
+  });
 
-      const watchState = onChange(state, initView(elements, i18n));
 
-      elements.form.addEventListener('submit', (event) => {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        const value = formData.get('url');
-        watchState.form.field.url = value.trim();
-        
-        const urls = state.form.allUrls.map(({url}) => url);
-        const schema = yup.string()
-          .url()
-          .notOneOf(urls);
+  const elements = {
+    form: document.querySelector('.rss-form'),
+    input: document.querySelector('#url-input'),
+    feedback: document.querySelector('.feedback'),
+    submit: document.querySelector('button[type="submit"]'),
+    feeds: document.querySelector('.feeds'),
+    posts: document.querySelector('.posts')
+  };
 
-        const validated = (url) => {
-          watchState.form.allUrls.push({ url, feedId: _.uniqueId() });
-          watchState.form.field.url = '';
-          watchState.form.processState = 'sending';
-          watchState.form.error = {};
-        }
+  const watchState = onChange(state, initView(elements, i18n));
 
-        schema.validate(value)
-          .then((url) => {
-            validated(url);
-            return parse(url);
+  elements.form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const value = (formData.get('url')).trim();
+    watchState.form.field.url = value;
+
+    const urls = state.form.allUrls.map(({ url }) => url);
+    const schema = yup.string()
+      .url()
+      .notOneOf(urls);
+
+    const validated = (url) => {
+      watchState.form.allUrls.push({ url, feedId: _.uniqueId() });
+      watchState.form.field.url = '';
+      watchState.form.processState = 'sending';
+      watchState.form.error = {};
+    }
+
+    schema.validate(value)
+      .then((url) => {
+        validated(url);
+        fetch(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`)
+          .then(response => {
+            if (response.ok) return response.json()
+            throw new Error('Network response was not ok.')
           })
-          .then(({feed, posts}) => {
-            watchState.form.parsed = {feed, posts};
-          })
-          .catch((e) => {
-            watchState.form.error = e.message;
-            return _.keyBy(e.inner, 'path');
+          .then((data) => {
+            // console.log(data.contents);
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data.contents, 'text/xml');
+            const feedTitle = doc.querySelector('title').textContent;
+            const feedDescription = doc.querySelector('description').textContent;
+            const items = doc.querySelectorAll('item');
+            const posts = [];
+            items.forEach((item) => {
+              const title = item.querySelector('title').textContent;
+              const description = item.querySelector('description').textContent;
+              const link = item.querySelector('link').textContent;
+              const pubDate = item.querySelector('pubDate').textContent;
+              posts.push({
+                title,
+                description,
+                link,
+                pubDate,
+              });
+            });
+            return {
+              feed: {
+                url,
+                title: feedTitle,
+                description: feedDescription,
+              },
+              posts,
+            };
           })
       })
-    });
-}
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((e) => {
+        watchState.form.error = e.message;
+        return _.keyBy(e.inner, 'path');
+      })
+  })
+};
