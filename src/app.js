@@ -47,7 +47,7 @@ export default () => {
     posts: document.querySelector('.posts')
   };
 
-  const watchState = onChange(state, initView(elements, i18n));
+  const watchState = onChange(state, initView(elements, i18n, state));
 
   elements.form.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -95,7 +95,7 @@ export default () => {
                 pubDate,
               });
             });
-            return {
+            watchState.form.parsed = {
               feed: {
                 url,
                 title: feedTitle,
@@ -103,10 +103,8 @@ export default () => {
               },
               posts,
             };
+            watchState.form.processState = 'success';
           })
-      })
-      .then((data) => {
-        console.log(data);
       })
       .catch((e) => {
         watchState.form.error = e.message;
