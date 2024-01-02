@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const renderErrorsHandler = (alert, elements, i18n) => {
   const errorMessage = alert !== undefined
     ? alert.key
@@ -17,8 +19,7 @@ const renderErrorsHandler = (alert, elements, i18n) => {
 };
 
 const successRenderPosts = (elements, state, i18n) => {
-  const { form } = state;
-  const { parsed } = form;
+  const { parsed } = state.form;
   const { posts } = elements;
 
   const divCard = document.createElement('div');
@@ -35,8 +36,9 @@ const successRenderPosts = (elements, state, i18n) => {
   const ulCard = document.createElement('ul');
   ulCard.classList.add('list-group', 'border-0', 'rounded-0');
 
-  let postCount = parsed.length;
+
   const liCards = parsed.posts.map((post) => {
+    const postCount = _.uniqueId();
     const liCard = document.createElement('li');
     liCard.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
@@ -58,14 +60,11 @@ const successRenderPosts = (elements, state, i18n) => {
     button.setAttribute('data-bs-target', '#modal');
     button.textContent = i18n.t('viewing')
 
-    postCount -= 1;
     liCard.append(a);
     liCard.append(button);
 
     return liCard
   })
-  // liCard.append(h3Li);
-  // liCard.append(pLi);
 
   ulCard.append(...liCards);
 
@@ -75,8 +74,7 @@ const successRenderPosts = (elements, state, i18n) => {
 }
 
 const successRenderFeeds = (elements, state, i18n) => {
-  const { form } = state;
-  const { parsed } = form;
+  const { parsed } = state.form;
   const { feeds } = elements;
   const divCard = document.createElement('div');
   divCard.classList.add('card', 'border-0');
