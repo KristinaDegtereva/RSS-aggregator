@@ -76,6 +76,7 @@ export default () => {
             })
             .then((data) => {
               parse(data, watchState, url);
+              watchState.form.processState = 'success';
             })
         })
         .catch((e) => {

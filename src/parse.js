@@ -25,6 +25,5 @@ export default (data, watchState, url) => {
       },
       posts,
     };
-    watchState.form.processState = 'success';
   };
   
