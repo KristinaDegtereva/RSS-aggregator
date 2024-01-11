@@ -1,8 +1,8 @@
-export default (data, watchState, url) => {
+export default (contents, watchState, url) => {
     const parser = new DOMParser();
-    const doc = parser.parseFromString(data.contents, 'text/xml');
-    const feedTitle = doc.querySelector('title').textContent;
-    const feedDescription = doc.querySelector('description').textContent;
+    const doc = parser.parseFromString(contents, 'text/xml');
+    const feedTitle = doc.querySelector('channel > title').textContent;
+    const feedDescription = doc.querySelector('channel > description').textContent;
     const items = doc.querySelectorAll('item');
     const posts = [];
     items.forEach((item) => {
@@ -17,7 +17,7 @@ export default (data, watchState, url) => {
         pubDate,
       });
     });
-    watchState.form.parsed = {
+    const obj = {
       feed: {
         url,
         title: feedTitle,
@@ -25,5 +25,7 @@ export default (data, watchState, url) => {
       },
       posts,
     };
+    watchState.form.parsed = obj;
+    return obj;
   };
   

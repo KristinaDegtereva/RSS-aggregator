@@ -9,6 +9,7 @@ import resources from './locales/index.js';
 import parse from './parse.js';
 import axios from 'axios';
 
+
 export default () => {
   const state = {
     form: {
@@ -18,7 +19,7 @@ export default () => {
       allUrls: [],
       processState: '',
       error: {},
-      parsed: {
+      parsed:  {
         feed: {},
         posts: [],
       },
@@ -50,7 +51,7 @@ export default () => {
     feedback: document.querySelector('.feedback'),
     submit: document.querySelector('button[type="submit"]'),
     feeds: document.querySelector('.feeds'),
-    posts: document.querySelector('.posts'),
+    posts: document.querySelector('.posts')
   };
 
   const i18n = i18next.createInstance();
@@ -87,22 +88,22 @@ export default () => {
           watchState.form.field.url = '';
           watchState.form.processState = 'sending';
           watchState.form.error = {};
-        };
+        }
 
         schema.validate(value)
           .then((url) => {
             successAdd(url);
-            return fetchFeed(url);
+            return fetchFeed(url)
           })
           .then(({ url, contents }) => {
             const getParse = parse(contents, watchState, url);
             watchState.form.processState = 'success';
             return getParse;
           })
-          .catch((e) => {
-            watchState.form.error = e.message;
-            return _.keyBy(e.inner, 'path');
-          });
-      });
-    });
+        .catch((e) => {
+          watchState.form.error = e.message;
+          return _.keyBy(e.inner, 'path');
+        })
+    })
+})
 };
