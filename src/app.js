@@ -9,40 +9,71 @@ import resources from './locales/index.js';
 import parse from './parse.js';
 import axios from 'axios';
 
+
+const getRoute = (url) => {
+  const result = new URL('/get', 'https://allorigins.hexlet.app');
+  result.searchParams.set('url', url);
+  result.searchParams.set('disableCache', 'true');
+  return axios.get(result.toString());
+};
+
+const updateRssState = (link, watchState) => getRoute(link)
+  .then((data) => parse(data.data.contents))
+  .then((data) => {
+    const { feedTitle, feedDescription, newPosts } = data;
+    const feedId = _.uniqueId();
+    watchState.content.feedsItem.unshift({
+      feedTitle, feedDescription, link, feedId,
+    });
+    newPosts.forEach((item) => {
+      item.postId = _.uniqueId();
+    });
+    const posts = [...newPosts, ...watchState.content.postsItem];
+    watchState.content.postsItem = posts;
+    watchState.form.error = '';
+  })
+
+
+
+const updatePosts = (watchState) => {
+  const getNewPosts = () => {
+    const promises = watchState.content.feedsItem.map((item) => getRoute(item.link)
+      .then((response) => {
+        const { newPosts } = parse(response.data.contents);
+        newPosts.forEach((post) => {
+          if (watchState.content.postsItem
+            .every((postsItem) => postsItem.postTitle !== post.postTitle)) {
+            const newPost = post;
+            newPost.postId = _.uniqueId();
+            watchState.content.postsItem.unshift(post);
+            // console.log('New posts added:', watchState.content.postsItem)
+          }
+        });
+      })
+      .catch((error) => {
+        watchState.form.error = error.message;
+      }));
+
+    Promise.all(promises)
+      .finally(() => setTimeout(update, 5000));
+  };
+  getNewPosts();
+};
+
 export default () => {
   const state = {
     form: {
       field: {
         url: '',
       },
-      allUrls: [],
       processState: '',
       error: {},
-      parsed: {
-        feed: {},
-        posts: [],
-      },
+    },
+    content: {
+      feedsItem: [],
+      postsItem: [],
     },
   };
-
-  const getRoute = (url) => {
-    const result = new URL('/get', 'https://allorigins.hexlet.app');
-    result.searchParams.set('url', url);
-    result.searchParams.set('disableCache', 'true');
-    return result.toString();
-  };
-
-  const fetchFeed = (link) => (axios.get(getRoute(link))
-    .then(({ data }) => {
-      const { contents } = data;
-      if (!contents.includes('xml')) {
-        const error = {
-          errors: [{ key: 'rssError' }],
-        };
-        throw error;
-      }
-      return { url: link, contents };
-    }));
 
   const elements = {
     form: document.querySelector('.rss-form'),
@@ -77,13 +108,12 @@ export default () => {
         const value = (formData.get('url')).trim();
         watchState.form.field.url = value;
 
-        const urls = state.form.allUrls.map(({ url }) => url);
+        const urls = watchState.content.feedsItem.map((feed) => feed.link);
         const schema = yup.string()
           .url()
           .notOneOf(urls);
 
-        const successAdd = (url) => {
-          watchState.form.allUrls.push({ url, feedId: _.uniqueId() });
+        const successAdd = () => {
           watchState.form.field.url = '';
           watchState.form.processState = 'sending';
           watchState.form.error = {};
@@ -92,17 +122,17 @@ export default () => {
         schema.validate(value)
           .then((url) => {
             successAdd(url);
-            return fetchFeed(url);
+            return updateRssState(url, watchState)
           })
-          .then(({ url, contents }) => {
-            const getParse = parse(contents, watchState, url);
+          .then(() => {
             watchState.form.processState = 'success';
-            return getParse;
           })
           .catch((e) => {
+            watchState.form.field.url = value;
             watchState.form.error = e.message;
             return _.keyBy(e.inner, 'path');
           });
       });
+      updatePosts(watchState);
     });
 };

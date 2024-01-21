@@ -1,31 +1,22 @@
-export default (contents, watchState, url) => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(contents, 'text/xml');
-    const feedTitle = doc.querySelector('channel > title').textContent;
-    const feedDescription = doc.querySelector('channel > description').textContent;
-    const items = doc.querySelectorAll('item');
-    const posts = [];
-    items.forEach((item) => {
-      const title = item.querySelector('title').textContent;
-      const description = item.querySelector('description').textContent;
-      const link = item.querySelector('link').textContent;
-      const pubDate = item.querySelector('pubDate').textContent;
-      posts.push({
-        title,
-        description,
-        link,
-        pubDate,
-      });
+export default (contents) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(contents, 'text/xml');
+  const feedTitle = doc.querySelector('channel > title').textContent;
+  const feedDescription = doc.querySelector('channel > description').textContent;
+  const postItems = doc.querySelectorAll('item');
+  const newPosts = [];
+  postItems.forEach((item) => {
+    const postTitle = item.querySelector('title').textContent;
+    const postDescription = item.querySelector('description').textContent;
+    const postLink = item.querySelector('link').textContent;
+    newPosts.push({
+      postTitle,
+      postDescription,
+      postLink,
     });
-    const obj = {
-      feed: {
-        url,
-        title: feedTitle,
-        description: feedDescription,
-      },
-      posts,
-    };
-    watchState.form.parsed = obj;
-    return obj;
-  };
-  
+  });
+  const obj = {
+    feedTitle, feedDescription, newPosts
+  }
+  return obj;
+};
