@@ -41,24 +41,23 @@ const successRenderPosts = (elements, state, i18n) => {
 
 
   const liCards = content.postsItem.map((post) => {
-    const postCount = _.uniqueId();
     const liCard = document.createElement('li');
     liCard.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
-    const { postTitle, postLink, } = post;
+    const { postTitle, postLink, postId } = post;
 
     const a = document.createElement('a');
     a.setAttribute('href', postLink);
     a.setAttribute('class', 'fw-bold');
     a.setAttribute('target', '_blank');
-    a.setAttribute('data-id', postCount);
+    a.setAttribute('data-id', postId);
     a.setAttribute('rel', 'noopener noreferrer');
     a.textContent = postTitle;
 
     const button = document.createElement('button');
     button.setAttribute('type', 'button');
     button.classList.add('btn', 'btn-outline-primary', 'btn-sm')
-    button.setAttribute('data-id', postCount);
+    button.setAttribute('data-id', postId);
     button.setAttribute('data-bs-toggle', 'modal');
     button.setAttribute('data-bs-target', '#modal');
     button.textContent = i18n.t('viewing')
@@ -74,7 +73,6 @@ const successRenderPosts = (elements, state, i18n) => {
   divCard.append(divCardBody);
   divCard.append(ulCard);
   posts.append(divCard);
-  console.log('Rendering posts completed');
 }
 
 const successRenderFeeds = (elements, state, i18n) => {
@@ -123,7 +121,34 @@ const successRenderFeeds = (elements, state, i18n) => {
   feeds.append(divCard);
 };
 
+const modalRender = (elements, state) => {
+  const { modalTitle, modalDescription, readButton } = elements;
+  const { content, modal, activePostId } = state;
 
+  console.log('Modal render. Modal:', modal);
+  console.log('Modal render. Clicked ID:', activePostId);
+
+    const selectedPost = content.postsItem.find((post) => activePostId === post.postId);
+    console.log('Modal render. Selected post:', selectedPost);
+
+    if (selectedPost) {
+      modalTitle.textContent = selectedPost.postTitle;
+      modalDescription.textContent = selectedPost.postDescription;
+      readButton.href = selectedPost.postLink;
+    } else {
+      console.error('Modal render. Selected post not found!');
+    }
+
+};
+
+const renderWatchedLinks = (state) => {
+  const { readLink } = state
+  readLink.forEach((postId) => {
+    const post = document.querySelector(`[data-id="${postId}"]`);
+    post.classList.add('fw-normal', 'link-secondary');;
+    post.classList.remove('fw-bold');
+  });
+};
 
 const handleProcessState = (elements, process, state, i18n) => {
   switch (process) {
@@ -135,10 +160,8 @@ const handleProcessState = (elements, process, state, i18n) => {
     case 'success':
       elements.form.reset();
       elements.form.focus();
-      console.log('Rendering feeds and posts...');
       successRenderFeeds(elements, state, i18n);
       successRenderPosts(elements, state, i18n);
-      console.log('Rendering feeds and posts completed');
       break
 
     default:
@@ -158,10 +181,19 @@ const initView = (elements, i18n, state) => (path, value) => {
 
     case 'content.postsItem':
       successRenderPosts(elements, state, i18n);
+      renderWatchedLinks(state);
       break;
 
     case 'content.feedsItem':
       successRenderFeeds(elements, state, i18n);
+      break;
+
+    case 'modal':
+      modalRender(elements, state);
+      break;
+
+    case 'readLink':
+      renderWatchedLinks(state);
       break;
 
     default:

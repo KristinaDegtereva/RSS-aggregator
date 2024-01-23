@@ -53,9 +53,7 @@ const updatePosts = (watchState) => {
       .catch((error) => {
         watchState.form.error = error.message;
       }));
-
-    Promise.all(promises)
-      .finally(() => setTimeout(update, 5000));
+    Promise.all(promises).finally(() => setTimeout(getNewPosts, 5000));
   };
   getNewPosts();
 };
@@ -73,7 +71,11 @@ export default () => {
       feedsItem: [],
       postsItem: [],
     },
+    modal: 'hidden',
+    activePostId: '',
+    readLink: new Set(),
   };
+
 
   const elements = {
     form: document.querySelector('.rss-form'),
@@ -82,6 +84,10 @@ export default () => {
     submit: document.querySelector('button[type="submit"]'),
     feeds: document.querySelector('.feeds'),
     posts: document.querySelector('.posts'),
+    modal: document.getElementById('modal'),
+    modalTitle: document.querySelector('.modal-title'),
+    modalDescription: document.querySelector('.modal-body'),
+    readButton: document.querySelector('.full-article'),
   };
 
   const i18n = i18next.createInstance();
@@ -101,6 +107,18 @@ export default () => {
       });
 
       const watchState = onChange(state, initView(elements, i18n, state));
+
+      elements.posts.addEventListener('click', (event) => {
+        const clickEl = event.target;
+        const id = clickEl.dataset.id;
+        console.log('Button clicked. ID:', id);
+        watchState.readLink.add(id);
+
+        if (clickEl.tagName === 'BUTTON') {
+          watchState.activePostId = id;
+          watchState.modal = 'visible';
+        }
+      })
 
       elements.form.addEventListener('submit', (event) => {
         event.preventDefault();
