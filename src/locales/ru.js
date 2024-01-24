@@ -7,7 +7,7 @@ export default {
         successUrl: 'RSS успешно загружен',
         urlError: 'Ссылка должна быть валидным URL',
         rssError: 'Ресурс не содержит валидный RSS',
-        notConnected: 'Ошибка сети',
+        networkError: 'Ошибка сети',
         dublicateError: 'RSS уже существует',
         feeds: 'Фиды',
         posts: 'Посты',

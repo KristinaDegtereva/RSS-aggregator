@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 const renderErrorsHandler = (alert, elements, i18n) => {
   const errorMessage = alert !== undefined
     ? alert.key
@@ -40,39 +38,39 @@ const successRenderPosts = (elements, state, i18n) => {
   ulCard.classList.add('list-group', 'border-0', 'rounded-0');
 
   const liCards = content.postsItem.map((post) => {
-  const liCard = document.createElement('li');
-  liCard.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+    const liCard = document.createElement('li');
+    liCard.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
-  const { postTitle, postLink, postId } = post;
+    const { postTitle, postLink, postId } = post;
 
-  const a = document.createElement('a');
-  a.setAttribute('href', postLink);
-  a.setAttribute('class', 'fw-bold');
-  a.setAttribute('target', '_blank');
-  a.setAttribute('data-id', postId);
-  a.setAttribute('rel', 'noopener noreferrer');
-  a.textContent = postTitle;
+    const a = document.createElement('a');
+    a.setAttribute('href', postLink);
+    a.setAttribute('class', 'fw-bold');
+    a.setAttribute('target', '_blank');
+    a.setAttribute('data-id', postId);
+    a.setAttribute('rel', 'noopener noreferrer');
+    a.textContent = postTitle;
 
-  if (state.readLink.has(postId)) {
-    a.classList.remove('fw-bold')
-    a.classList.add('link-secondary', 'fw-normal');
-  }
+    if (state.readLink.has(postId)) {
+      a.classList.remove('fw-bold')
+      a.classList.add('link-secondary', 'fw-normal');
+    }
 
-  const button = document.createElement('button');
-  button.setAttribute('type', 'button');
-  button.classList.add('btn', 'btn-outline-primary', 'btn-sm')
-  button.setAttribute('data-id', postId);
-  button.setAttribute('data-bs-toggle', 'modal');
-  button.setAttribute('data-bs-target', '#modal');
-  button.textContent = i18n.t('viewing')
+    const button = document.createElement('button');
+    button.setAttribute('type', 'button');
+    button.classList.add('btn', 'btn-outline-primary', 'btn-sm')
+    button.setAttribute('data-id', postId);
+    button.setAttribute('data-bs-toggle', 'modal');
+    button.setAttribute('data-bs-target', '#modal');
+    button.textContent = i18n.t('viewing')
 
-  liCard.append(a);
-  liCard.append(button);
+    liCard.append(a);
+    liCard.append(button);
 
-  return liCard
-});
+    return liCard
+  });
 
-ulCard.append(...liCards);
+  ulCard.append(...liCards);
 
 
   divCard.append(divCardBody);
@@ -128,21 +126,15 @@ const successRenderFeeds = (elements, state, i18n) => {
 
 const modalRender = (elements, state) => {
   const { modalTitle, modalDescription, readButton } = elements;
-  const { content, modal, activePostId } = state;
+  const { content, activePostId } = state;
 
-  console.log('Modal render. Modal:', modal);
-  console.log('Modal render. Clicked ID:', activePostId);
+  const selectedPost = content.postsItem.find((post) => activePostId === post.postId);
 
-    const selectedPost = content.postsItem.find((post) => activePostId === post.postId);
-    console.log('Modal render. Selected post:', selectedPost);
-
-    if (selectedPost) {
-      modalTitle.textContent = selectedPost.postTitle;
-      modalDescription.textContent = selectedPost.postDescription;
-      readButton.href = selectedPost.postLink;
-    } else {
-      console.error('Modal render. Selected post not found!');
-    }
+  if (selectedPost) {
+    modalTitle.textContent = selectedPost.postTitle;
+    modalDescription.textContent = selectedPost.postDescription;
+    readButton.href = selectedPost.postLink;
+  }
 
 };
 
@@ -150,7 +142,7 @@ const renderWatchedLinks = (state) => {
   const { readLink } = state
   readLink.forEach((postId) => {
     const post = document.querySelector(`[data-id="${postId}"]`);
-    post.classList.add('fw-normal', 'link-secondary');;
+    post.classList.add('fw-normal', 'link-secondary');
     post.classList.remove('fw-bold');
   });
 };

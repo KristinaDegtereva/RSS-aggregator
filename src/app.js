@@ -32,6 +32,14 @@ const updateRssState = (link, watchState) => getRoute(link)
     watchState.content.postsItem = posts;
     watchState.form.error = '';
   })
+  .catch((e) => {
+    if (e.isAxiosError) {
+      watchState.form.error = 'networkError';
+    }
+    if (e.isParsingError) {
+      watchState.form.error = 'rssError';
+    }
+  })
 
 
 
@@ -46,7 +54,6 @@ const updatePosts = (watchState) => {
             const newPost = post;
             newPost.postId = _.uniqueId();
             watchState.content.postsItem.unshift(post);
-            // console.log('New posts added:', watchState.content.postsItem)
           }
         });
       })
@@ -111,7 +118,6 @@ export default () => {
       elements.posts.addEventListener('click', (event) => {
         const clickEl = event.target;
         const id = clickEl.dataset.id;
-        console.log('Button clicked. ID:', id);
         watchState.readLink.add(id);
 
         if (clickEl.tagName === 'BUTTON') {
