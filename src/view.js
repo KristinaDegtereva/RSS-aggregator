@@ -39,36 +39,41 @@ const successRenderPosts = (elements, state, i18n) => {
   const ulCard = document.createElement('ul');
   ulCard.classList.add('list-group', 'border-0', 'rounded-0');
 
-
   const liCards = content.postsItem.map((post) => {
-    const liCard = document.createElement('li');
-    liCard.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+  const liCard = document.createElement('li');
+  liCard.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
 
-    const { postTitle, postLink, postId } = post;
+  const { postTitle, postLink, postId } = post;
 
-    const a = document.createElement('a');
-    a.setAttribute('href', postLink);
-    a.setAttribute('class', 'fw-bold');
-    a.setAttribute('target', '_blank');
-    a.setAttribute('data-id', postId);
-    a.setAttribute('rel', 'noopener noreferrer');
-    a.textContent = postTitle;
+  const a = document.createElement('a');
+  a.setAttribute('href', postLink);
+  a.setAttribute('class', 'fw-bold');
+  a.setAttribute('target', '_blank');
+  a.setAttribute('data-id', postId);
+  a.setAttribute('rel', 'noopener noreferrer');
+  a.textContent = postTitle;
 
-    const button = document.createElement('button');
-    button.setAttribute('type', 'button');
-    button.classList.add('btn', 'btn-outline-primary', 'btn-sm')
-    button.setAttribute('data-id', postId);
-    button.setAttribute('data-bs-toggle', 'modal');
-    button.setAttribute('data-bs-target', '#modal');
-    button.textContent = i18n.t('viewing')
+  if (state.readLink.has(postId)) {
+    a.classList.remove('fw-bold')
+    a.classList.add('link-secondary', 'fw-normal');
+  }
 
-    liCard.append(a);
-    liCard.append(button);
+  const button = document.createElement('button');
+  button.setAttribute('type', 'button');
+  button.classList.add('btn', 'btn-outline-primary', 'btn-sm')
+  button.setAttribute('data-id', postId);
+  button.setAttribute('data-bs-toggle', 'modal');
+  button.setAttribute('data-bs-target', '#modal');
+  button.textContent = i18n.t('viewing')
 
-    return liCard
-  })
+  liCard.append(a);
+  liCard.append(button);
 
-  ulCard.append(...liCards);
+  return liCard
+});
+
+ulCard.append(...liCards);
+
 
   divCard.append(divCardBody);
   divCard.append(ulCard);
@@ -186,9 +191,10 @@ const initView = (elements, i18n, state) => (path, value) => {
 
     case 'content.feedsItem':
       successRenderFeeds(elements, state, i18n);
+      renderWatchedLinks(state);
       break;
 
-    case 'modal':
+    case 'activePostId':
       modalRender(elements, state);
       break;
 
