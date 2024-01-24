@@ -32,16 +32,14 @@ const updateRssState = (link, watchState) => getRoute(link)
     watchState.content.postsItem = posts;
     watchState.form.error = '';
   })
-  .catch((e) => {
-    if (e.isAxiosError) {
-      watchState.form.error = 'networkError';
-    }
-    if (e.isParsingError) {
-      watchState.form.error = 'rssError';
-    }
-  })
-
-
+  // .catch((e) => {
+  //   if (e.isAxiosError) {
+  //     watchState.form.error = 'networkError';
+  //   }
+  //   if (e.isParsingError) {
+  //     watchState.form.error = 'rssError';
+  //   }
+  // })
 
 const updatePosts = (watchState) => {
   const getNewPosts = () => {
@@ -146,7 +144,7 @@ export default () => {
         schema.validate(value)
           .then((url) => {
             successAdd(url);
-            return updateRssState(url, watchState)
+            updateRssState(url, watchState)
           })
           .then(() => {
             watchState.form.processState = 'success';
