@@ -1,7 +1,7 @@
 const renderErrorsHandler = (alert, elements, i18n) => {
   const errorMessage = alert !== undefined
     ? alert.key
-    : alert
+    : alert;
   if (errorMessage) {
     elements.input.classList.add('is-invalid');
     elements.feedback.classList.add('text-danger');
@@ -15,7 +15,6 @@ const renderErrorsHandler = (alert, elements, i18n) => {
     elements.form.focus();
   }
 };
-
 
 const successRenderPosts = (elements, state, i18n) => {
   state.form.field.url = '';
@@ -53,31 +52,30 @@ const successRenderPosts = (elements, state, i18n) => {
     a.textContent = postTitle;
 
     if (state.readLink.has(postId)) {
-      a.classList.remove('fw-bold')
+      a.classList.remove('fw-bold');
       a.classList.add('link-secondary', 'fw-normal');
     }
 
     const button = document.createElement('button');
     button.setAttribute('type', 'button');
-    button.classList.add('btn', 'btn-outline-primary', 'btn-sm')
+    button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
     button.setAttribute('data-id', postId);
     button.setAttribute('data-bs-toggle', 'modal');
     button.setAttribute('data-bs-target', '#modal');
-    button.textContent = i18n.t('viewing')
+    button.textContent = i18n.t('viewing');
 
     liCard.append(a);
     liCard.append(button);
 
-    return liCard
+    return liCard;
   });
 
   ulCard.append(...liCards);
 
-
   divCard.append(divCardBody);
   divCard.append(ulCard);
   posts.append(divCard);
-}
+};
 
 const successRenderFeeds = (elements, state, i18n) => {
   const { content } = state;
@@ -136,11 +134,10 @@ const modalRender = (elements, state) => {
     modalDescription.textContent = selectedPost.postDescription;
     readButton.href = selectedPost.postLink;
   }
-
 };
 
 const renderWatchedLinks = (state) => {
-  const { readLink } = state
+  const { readLink } = state;
   readLink.forEach((postId) => {
     const post = document.querySelector(`[data-id="${postId}"]`);
     post.classList.add('fw-normal', 'link-secondary');
@@ -203,6 +200,6 @@ const initView = (elements, i18n, state) => (path, value) => {
     default:
       break;
   }
-}
+};
 
 export default initView;

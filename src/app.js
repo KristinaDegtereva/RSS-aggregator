@@ -2,13 +2,12 @@ import './styles.scss';
 import 'bootstrap';
 import * as yup from 'yup';
 import _ from 'lodash';
-import onChange from 'on-change';
-import initView from './view.js';
 import i18next from 'i18next';
-import resources from './locales/index.js';
-import parse from './parse.js';
 import axios from 'axios';
-
+import onChange from 'on-change';
+import initView from './view';
+import resources from './locales/index';
+import parse from './parse';
 
 const getRoute = (url) => {
   const result = new URL('/get', 'https://allorigins.hexlet.app');
@@ -33,15 +32,14 @@ const updateRssState = (link, watchState) => getRoute(link)
     watchState.form.error = '';
   })
   .catch((e) => {
-    console.log(e);
     watchState.form.processState = 'failed';
     if (e.message === 'rssError') {
-          watchState.form.error = ({ key: 'rssError' })
+      watchState.form.error = ({ key: 'rssError' });
     }
     if (e.message === 'Network Error') {
-          watchState.form.error = ({ key: 'networkError' })
-      }}
-    )
+      watchState.form.error = ({ key: 'networkError' });
+    }
+  });
 
 const updatePosts = (watchState) => {
   const getNewPosts = () => {
@@ -83,7 +81,6 @@ export default () => {
     readLink: new Set(),
   };
 
-
   const elements = {
     form: document.querySelector('.rss-form'),
     input: document.querySelector('#url-input'),
@@ -117,14 +114,14 @@ export default () => {
 
       elements.posts.addEventListener('click', (event) => {
         const clickEl = event.target;
-        const id = clickEl.dataset.id;
+        const { id } = clickEl.dataset;
         watchState.readLink.add(id);
 
         if (clickEl.tagName === 'BUTTON') {
           watchState.activePostId = id;
           watchState.modal = 'visible';
         }
-      })
+      });
 
       elements.form.addEventListener('submit', (event) => {
         event.preventDefault();
@@ -137,12 +134,11 @@ export default () => {
           .url()
           .notOneOf(urls);
 
-
         schema.validate(value)
           .then((url) => {
             watchState.form.processState = 'sending';
             watchState.form.error = {};
-            updateRssState(url, watchState)
+            updateRssState(url, watchState);
           })
           .then(() => {
             watchState.form.processState = 'success';
