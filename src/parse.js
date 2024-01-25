@@ -1,6 +1,11 @@
 export default (contents) => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(contents, 'text/xml');
+  const parseError = doc.querySelector('parsererror');
+
+  if (parseError) {
+    throw new Error('rssError');
+  }
   const feedTitle = doc.querySelector('channel > title').textContent;
   const feedDescription = doc.querySelector('channel > description').textContent;
   const postItems = doc.querySelectorAll('item');

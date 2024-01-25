@@ -32,14 +32,17 @@ const updateRssState = (link, watchState) => getRoute(link)
     watchState.content.postsItem = posts;
     watchState.form.error = '';
   })
-  // .catch((e) => {
-  //   if (e.isAxiosError) {
-  //     watchState.form.error = 'networkError';
-  //   }
-  //   if (e.isParsingError) {
-  //     watchState.form.error = 'rssError';
-  //   }
-  // })
+  .catch((e) => {
+    console.log(e);
+    watchState.form.processState = 'failed'
+    if (e.message === 'rssError') {
+          watchState.form.error = ({ key: 'rssError' })
+    }
+    if (e.message === 'Network error') {
+          watchState.form.error = ({ key: 'networkError' })
+      }}
+    )
+
 
 const updatePosts = (watchState) => {
   const getNewPosts = () => {
@@ -70,7 +73,7 @@ export default () => {
         url: '',
       },
       processState: '',
-      error: {},
+      error: '',
     },
     content: {
       feedsItem: [],
@@ -135,25 +138,25 @@ export default () => {
           .url()
           .notOneOf(urls);
 
-        const successAdd = () => {
-          watchState.form.field.url = '';
-          watchState.form.processState = 'sending';
-          watchState.form.error = {};
-        };
 
         schema.validate(value)
+        .then(() => {
+          watchState.form.processState = 'filling'
+        })
           .then((url) => {
-            successAdd(url);
-            updateRssState(url, watchState)
+            watchState.form.field.url = '';
+            watchState.form.processState = 'sending';
+            watchState.form.error = {};
+            return updateRssState(url, watchState)
           })
           .then(() => {
             watchState.form.processState = 'success';
           })
           .catch((e) => {
+            watchState.form.processState = 'failed'
             watchState.form.field.url = value;
             watchState.form.error = e.message;
-            return _.keyBy(e.inner, 'path');
-          });
+          })
       });
       updatePosts(watchState);
     });

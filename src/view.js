@@ -1,4 +1,5 @@
 const renderErrorsHandler = (alert, elements, i18n) => {
+  console.log(alert);
   const errorMessage = alert !== undefined
     ? alert.key
     : alert
@@ -149,9 +150,9 @@ const renderWatchedLinks = (state) => {
 
 const handleProcessState = (elements, process, state, i18n) => {
   switch (process) {
-    case 'sending':
-      elements.form.reset();
-      elements.form.focus();
+    case 'failed':
+      elements.input.focus();
+      elements.submit.removeAttribute('disabled');
       break;
 
     case 'success':
@@ -159,7 +160,15 @@ const handleProcessState = (elements, process, state, i18n) => {
       elements.form.focus();
       successRenderFeeds(elements, state, i18n);
       successRenderPosts(elements, state, i18n);
-      break
+      break;
+
+    case 'sending':
+      elements.submit.setAttribute('disabled', true);
+      break;
+
+    case 'filling':
+      elements.submit.removeAttribute('disabled');
+      break;
 
     default:
       throw new Error(`Unknown process ${process}`);
