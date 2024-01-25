@@ -34,15 +34,14 @@ const updateRssState = (link, watchState) => getRoute(link)
   })
   .catch((e) => {
     console.log(e);
-    watchState.form.processState = 'failed'
+    watchState.form.processState = 'failed';
     if (e.message === 'rssError') {
           watchState.form.error = ({ key: 'rssError' })
     }
-    if (e.message === 'Network error') {
+    if (e.message === 'Network Error') {
           watchState.form.error = ({ key: 'networkError' })
       }}
     )
-
 
 const updatePosts = (watchState) => {
   const getNewPosts = () => {
@@ -140,23 +139,19 @@ export default () => {
 
 
         schema.validate(value)
-        .then(() => {
-          watchState.form.processState = 'filling'
-        })
           .then((url) => {
-            watchState.form.field.url = '';
             watchState.form.processState = 'sending';
             watchState.form.error = {};
-            return updateRssState(url, watchState)
+            updateRssState(url, watchState)
           })
           .then(() => {
             watchState.form.processState = 'success';
           })
           .catch((e) => {
-            watchState.form.processState = 'failed'
+            watchState.form.processState = 'failed';
             watchState.form.field.url = value;
             watchState.form.error = e.message;
-          })
+          });
       });
       updatePosts(watchState);
     });

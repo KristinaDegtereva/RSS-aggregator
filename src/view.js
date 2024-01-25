@@ -1,5 +1,4 @@
 const renderErrorsHandler = (alert, elements, i18n) => {
-  console.log(alert);
   const errorMessage = alert !== undefined
     ? alert.key
     : alert
@@ -19,6 +18,7 @@ const renderErrorsHandler = (alert, elements, i18n) => {
 
 
 const successRenderPosts = (elements, state, i18n) => {
+  state.form.field.url = '';
   const { content } = state;
   const { posts } = elements;
 
@@ -151,23 +151,20 @@ const renderWatchedLinks = (state) => {
 const handleProcessState = (elements, process, state, i18n) => {
   switch (process) {
     case 'failed':
+      elements.submit.disabled = false;
       elements.input.focus();
-      elements.submit.removeAttribute('disabled');
+      break;
+    case 'sending':
+      elements.submit.disabled = true;
+      elements.form.focus();
       break;
 
     case 'success':
+      elements.submit.disabled = false;
       elements.form.reset();
       elements.form.focus();
       successRenderFeeds(elements, state, i18n);
       successRenderPosts(elements, state, i18n);
-      break;
-
-    case 'sending':
-      elements.submit.setAttribute('disabled', true);
-      break;
-
-    case 'filling':
-      elements.submit.removeAttribute('disabled');
       break;
 
     default:
