@@ -1,8 +1,10 @@
 {
   "name": "@hexlet/code",
   "version": "1.0.0",
+  "type": "module",
   "description": "Rss aggregator project",
   "main": "index.js",
+
   "scripts": {
     "build": "NODE_ENV=production webpack --mode production"
   },
