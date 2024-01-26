@@ -1,7 +1,7 @@
 {
   "name": "@hexlet/code",
   "version": "1.0.0",
-  "description": "My webpack project",
+  "description": "Rss aggregator project",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -11,7 +11,7 @@
     "watch": "webpack --watch",
     "serve": "webpack serve"
   },
-  "author": "",
+  "author": "Kristina Degtereva",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.23.6",
