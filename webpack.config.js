@@ -1,15 +1,17 @@
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
 
-// import path from 'path';
+import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 const config = {
   mode: process.env.NODE_ENV || 'development',
-  entry: './src/index.js',
+  entry: path.resolve(__dirname, './src/index.js'),
   output: {
-    // path: path.resolve(__dirname, 'dist'),
+    filename: '[name].[contenehash].js',
+    path: path.resolve(__dirname, './dist'),
+    clean: true,
   },
   devServer: {
     open: true,
