@@ -9,9 +9,7 @@ const config = {
   mode: process.env.NODE_ENV || 'development',
   entry: path.resolve(__dirname, './src/index.js'),
   output: {
-    filename: '[name].[contenehash].js',
-    path: path.resolve(__dirname, './dist'),
-    clean: true,
+    // path: path.resolve(__dirname, 'dist'),
   },
   devServer: {
     open: true,
