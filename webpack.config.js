@@ -1,6 +1,7 @@
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
 
 // import path from 'path';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 export default {
@@ -17,9 +18,14 @@ export default {
     new HtmlWebpackPlugin({
       template: 'index.html',
     }),
-  ],
+    new MiniCssExtractPlugin(),
+  ], 
   module: {
     rules: [
+      {
+        test: /\.scss$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
+      },
       {
         test: /.(js|jsx)$/i,
         loader: 'babel-loader',
