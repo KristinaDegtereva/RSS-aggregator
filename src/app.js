@@ -5,9 +5,9 @@ import _ from 'lodash';
 import i18next from 'i18next';
 import axios from 'axios';
 import onChange from 'on-change';
-import initView from './view';
-import resources from './locales/index';
-import parse from './parse';
+import initView from './view.js';
+import resources from './locales/index.js';
+import parse from './parse.js';
 
 const getRoute = (url) => {
   const result = new URL('/get', 'https://allorigins.hexlet.app');

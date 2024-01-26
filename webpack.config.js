@@ -6,6 +6,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 const isProduction = process.env.NODE_ENV === 'production';
 
 const config = {
+  mode: process.env.NODE_ENV || 'development',
   entry: './src/index.js',
   output: {
     // path: path.resolve(__dirname, 'dist'),
@@ -47,11 +48,10 @@ const config = {
   },
 };
 
-export default () => {
-  if (isProduction) {
-    config.mode = 'production';
-  } else {
-    config.mode = 'development';
-  }
-  return config;
-};
+if (isProduction) {
+  config.mode = 'production';
+} else {
+  config.mode = 'development';
+}
+
+export default config;
