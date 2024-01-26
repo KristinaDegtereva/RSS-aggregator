@@ -1,8 +1,7 @@
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
 
-import path from 'path';
+// import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -48,7 +47,7 @@ const config = {
   },
 };
 
-module.exports = () => {
+export default () => {
   if (isProduction) {
     config.mode = 'production';
   } else {
