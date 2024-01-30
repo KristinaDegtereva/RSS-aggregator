@@ -8,6 +8,7 @@ import onChange from 'on-change';
 import initView from './view.js';
 import resources from './locales/index.js';
 import parse from './parse.js';
+import errors from './locales/errors.js';
 
 const getRoute = (url) => {
   const result = new URL('/get', 'https://allorigins.hexlet.app');
@@ -41,26 +42,31 @@ const updateRssState = (link, watchState) => getRoute(link)
     }
   });
 
+const delay = 5000;
+
 const updatePosts = (watchState) => {
-  const getNewPosts = () => {
-    const promises = watchState.content.feedsItem.map((item) => getRoute(item.link)
-      .then((response) => {
-        const { newPosts } = parse(response.data.contents);
-        newPosts.forEach((post) => {
-          if (watchState.content.postsItem
-            .every((postsItem) => postsItem.postTitle !== post.postTitle)) {
-            const newPost = post;
-            newPost.postId = _.uniqueId();
-            watchState.content.postsItem.unshift(post);
-          }
-        });
-      })
-      .catch((error) => {
-        watchState.form.error = error.message;
-      }));
-    Promise.all(promises).finally(() => setTimeout(getNewPosts, 5000));
-  };
-  getNewPosts();
+  const promises = watchState.content.feedsItem.map((item) => getRoute(item.link)
+    .then((response) => {
+      const { newPosts } = parse(response.data.contents);
+      newPosts.forEach((post) => {
+        const uniquePostTitle = watchState.content.postsItem
+          .every((postsItem) => postsItem.postTitle !== post.postTitle);
+        if (uniquePostTitle) {
+          const newPost = post;
+          newPost.postId = _.uniqueId();
+          watchState.content.postsItem.unshift(post);
+        }
+      });
+    })
+    .catch((error) => {
+      watchState.form.error = error.message;
+    }));
+
+  Promise.all(promises).finally(() => {
+    setTimeout(() => {
+      updatePosts(watchState);
+    }, delay);
+  });
 };
 
 export default () => {
@@ -101,14 +107,7 @@ export default () => {
     resources,
   })
     .then(() => {
-      yup.setLocale({
-        mixed: {
-          notOneOf: () => ({ key: 'dublicateError' }),
-        },
-        string: {
-          url: () => ({ key: 'urlError' }),
-        },
-      });
+      yup.setLocale(errors);
 
       const watchState = onChange(state, initView(elements, i18n, state));
 
@@ -127,7 +126,6 @@ export default () => {
         event.preventDefault();
         const formData = new FormData(event.target);
         const value = (formData.get('url')).trim();
-        watchState.form.field.url = value;
 
         const urls = watchState.content.feedsItem.map((feed) => feed.link);
         const schema = yup.string()
@@ -136,11 +134,10 @@ export default () => {
 
         schema.validate(value)
           .then((url) => {
+            watchState.form.field.url = value;
             watchState.form.processState = 'sending';
             watchState.form.error = {};
             updateRssState(url, watchState);
-          })
-          .then(() => {
             watchState.form.processState = 'success';
           })
           .catch((e) => {
@@ -149,6 +146,8 @@ export default () => {
             watchState.form.error = e.message;
           });
       });
-      updatePosts(watchState);
+      setTimeout(() => {
+        updatePosts(watchState);
+      }, delay);
     });
 };
