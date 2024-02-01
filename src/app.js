@@ -18,6 +18,7 @@ const getRoute = (url) => {
 };
 
 const updateRssState = (link, watchState) => getRoute(link)
+  .then((data) => parse(data.data.contents))
   .then((data) => {
     parse(data.data.contents)
     const { feedTitle, feedDescription, newPosts } = data;
