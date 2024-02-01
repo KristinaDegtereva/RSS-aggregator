@@ -4,7 +4,9 @@ export default (contents) => {
 
   const parseError = doc.querySelector('parsererror');
   if (parseError) {
-    throw new Error('rssError');
+    const error = new Error('rssError');
+    error.isParsingError = true;
+    throw error;
   }
 
   const feedTitle = doc.querySelector('channel > title').textContent;
